@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=360px,initial-scale=1">
+<title>娃娃遥控器</title>
+<style>
+body{
+  width: 360px;
+  margin: auto;
+  font-size: 0;
+  user-select: none;
+  overflow: hidden;
+}
+h1{
+  font-size: 50px;
+  text-align: center;
+  padding: 15px;
+  margin: 0;
+  background-color: #000077;
+  color: #ffffff;
+  line-height: 60px;
+}
+video{
+  display: none;
+}
+input[type=button]{
+  border: 0px;
+  padding: 0px;
+  margin: 0;
+  font-size: 20px;
+  font-family: inherit;
+  color: #ffffff;
+  font-weight: normal;
+}
+input[type=button].control{
+  height: 120px;
+  width: 120px;
+}
+input[type=button].control:nth-of-type(2n){
+  background-color: #770000;
+}
+input[type=button].control:nth-of-type(2n+1){
+  background-color: #007700;
+}
+input[type=button].control:active, #talk:active{
+  background-color: #000000;
+}
+#full-screen{
+  background-color: #777700;
+  width: 100%;
+  height: 60%;
+  display: block;
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+}
+#full-screen-detail{
+  background-color: #007777;
+  width: 100%;
+  height: 40%;
+  display: block;
+  position: fixed;
+  z-index: 100;
+  bottom: 0;
+  left: 0;
+}
+#talk{
+  background-color: #000077;
+  width: 100%;
+  height: 80px;
+}
+#talking{
+  width: 100%;
+  height: 480px;
+  display: none;
+  position: relative;
+  z-index: 20;
+  top: -560px;
+  background-color: #777777;
+}
+</style>
+</head>
+<body>
+<h1>娃娃遥控器</h1>
+<input type="button" class="control" value="举左手" ontouchstart="playRecord('left_arm.m4a')" onmousedown="playRecord('left_arm.m4a')">
+<input type="button" class="control" value="比心" ontouchstart="playRecord('heart.m4a')" onmousedown="playRecord('heart.m4a')">
+<input type="button" class="control" value="举右手" ontouchstart="playRecord('right_arm.m4a')" onmousedown="playRecord('right_arm.m4a')">
+<input type="button" class="control" value="抬左腿" ontouchstart="playRecord('left_leg.m4a')" onmousedown="playRecord('left_leg.m4a')">
+<input type="button" class="control" value="跳起" ontouchstart="playRecord('jump.m4a')" onmousedown="playRecord('jump.m4a')">
+<input type="button" class="control" value="抬右腿" ontouchstart="playRecord('right_leg.m4a')" onmousedown="playRecord('right_leg.m4a')">
+<input type="button" class="control" value="弯腰" ontouchstart="playRecord('bow.m4a')" onmousedown="playRecord('bow.m4a')">
+<input type="button" class="control" value="前进" ontouchstart="playRecord('forward.m4a')" onmousedown="playRecord('forward.m4a')">
+<input type="button" class="control" value="蹲下" ontouchstart="playRecord('squat.m4a')" onmousedown="playRecord('squat.m4a')">
+<input type="button" class="control" value="左转" ontouchstart="playRecord('left_turn.m4a')" onmousedown="playRecord('left_turn.m4a')">
+<input type="button" class="control" value="停止" ontouchstart="playRecord('stop.m4a')" onmousedown="playRecord('stop.m4a')">
+<input type="button" class="control" value="右转" ontouchstart="playRecord('right_turn.m4a')" onmousedown="playRecord('right_turn.m4a')">
+<input type="button" value="喊话" onclick="switchTalk()" id="talk">
+<input type="button" value="欢迎使用娃娃遥控器！" onclick="fullScreen()" id="full-screen">
+<input type="button" value="使用方法" onclick="alert('使用方法：连接蓝牙耳机并给娃娃戴上，然后点击按钮即可播放语音控制娃娃动作。点击最下方“喊话”按钮可以向娃娃喊话。请注意给予浏览器以及本页面录音权限。')" id="full-screen-detail">
+<input type="button" value="喊话中，控制功能不可用" id="talking">
+<video id="video"></video>
+</body>
+<script>
+var video = document.getElementById("video");
+var mediaStraeam = null;
+function playRecord(record){
+  if(!video.srcObject && (video.paused || video.src.indexOf(record) < 0)){
+    video.src = record;
+    console.log(video.src);
+    video.play().then(function(){
+
+    }).catch(function(err){
+      window.alert("无法播放控制语音"+record);
+      video.src = null;
+    });
+  }
+}
+function fullScreen(){
+  document.getElementById("full-screen").style.display = "none";
+  document.getElementById("full-screen-detail").style.display = "none";
+  navigator.mediaDevices.getUserMedia({video: false, audio: true}).then(function(stream){
+    mediaStream = stream;
+    document.documentElement.requestFullscreen().then(function(){
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+    });
+  }).catch(function(err){
+    window.alert("您未授予麦克风权限，喊话功能不可用");
+    document.getElementById("talk").style.display = "none";
+  });
+  
+}
+function startTalk(){
+  console.log("startTalk");
+  video.srcObject = mediaStream;
+  video.play();
+}
+function stopTalk(){
+  console.log("stopTalk");
+  video.pause();
+  video.srcObject = null;
+}
+function switchTalk(){
+  if(video.srcObject){
+    stopTalk();
+    document.getElementById("talk").style.backgroundColor = "#000077";
+    document.getElementById("talking").style.display = "none";
+  }else{
+    startTalk();
+    document.getElementById("talk").style.backgroundColor = "#000000";
+    document.getElementById("talking").style.display = "block";
+  }
+}
+</script>
+</html>
