@@ -98,13 +98,19 @@ input[type=button].control:active, #talk:active{
 <input type="button" class="control" value="右转" ontouchstart="playRecord('right_turn.m4a')" onmousedown="playRecord('right_turn.m4a')">
 <input type="button" value="喊话" onclick="switchTalk()" id="talk">
 <input type="button" value="欢迎使用娃娃遥控器！" onclick="fullScreen()" id="full-screen">
-<input type="button" value="使用方法" onclick="alert('使用方法：连接蓝牙耳机并给娃娃戴上，然后点击按钮即可播放语音控制娃娃动作。点击最下方“喊话”按钮可以向娃娃喊话。请注意给予浏览器以及本页面录音权限。')" id="full-screen-detail">
+<input type="button" value="使用方法" onclick="detail()" id="full-screen-detail">
 <input type="button" value="喊话中，控制功能不可用" id="talking">
 <video id="video"></video>
 </body>
 <script>
 var video = document.getElementById("video");
 var mediaStraeam = null;
+navigator.mediaDevices.getUserMedia({video: false, audio: true}).then(function(stream){
+  mediaStream = stream;
+}).catch(function(err){
+  window.alert("您未授予麦克风权限，喊话功能不可用");
+  document.getElementById("talk").style.display = "none";
+});
 function playRecord(record){
   if(!video.srcObject && (video.paused || video.src.indexOf(record) < 0)){
     video.src = record;
@@ -120,17 +126,15 @@ function playRecord(record){
 function fullScreen(){
   document.getElementById("full-screen").style.display = "none";
   document.getElementById("full-screen-detail").style.display = "none";
-  navigator.mediaDevices.getUserMedia({video: false, audio: true}).then(function(stream){
-    mediaStream = stream;
-    document.documentElement.requestFullscreen().then(function(){
-      let width = window.innerWidth;
-      let height = window.innerHeight;
-    });
-  }).catch(function(err){
-    window.alert("您未授予麦克风权限，喊话功能不可用");
-    document.getElementById("talk").style.display = "none";
+  document.documentElement.requestFullscreen().then(function(){
+    let width = window.innerWidth;
+    let height = window.innerHeight;
   });
-  
+}
+function detail(){
+  if(confirm('连接蓝牙耳机并给娃娃戴上即可。点击“确定”前往疑难解答。')){
+    window.open("README.md");
+  }
 }
 function startTalk(){
   console.log("startTalk");
