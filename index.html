@@ -15,7 +15,7 @@ body{
 h1{
   font-size: 50px;
   text-align: center;
-  padding: 15px;
+  padding: 30px 15px 15px;
   margin: 0;
   background-color: #000077;
   color: #ffffff;
@@ -104,7 +104,7 @@ input[type=button].control:active, #talk:active{
 </body>
 <script>
 var video = document.getElementById("video");
-var mediaStraeam = null;
+var mediaStream = null;
 navigator.mediaDevices.getUserMedia({video: false, audio: true}).then(function(stream){
   mediaStream = stream;
 }).catch(function(err){
